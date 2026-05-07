@@ -6,7 +6,9 @@ namespace CanvasBid.Models
         Sold,
         Expired,
         Approved,
-        Rejected
+        Rejected,
+        pending
+
     }
 
     public class Artwork
