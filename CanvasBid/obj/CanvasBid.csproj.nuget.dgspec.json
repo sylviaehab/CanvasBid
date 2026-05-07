@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {}
+    "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {}
   },
   "projects": {
-    "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {
+    "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
+        "projectUniqueName": "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
         "projectName": "CanvasBid",
-        "projectPath": "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
+        "projectPath": "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
         "packagesPath": "C:\\Users\\dell\\.nuget\\packages\\",
-        "outputPath": "E:\\.net projects\\CanvasBid\\CanvasBid\\obj\\",
+        "outputPath": "e:\\.net projects\\CanvasBid\\CanvasBid\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dell\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -44,6 +44,10 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.4, )"

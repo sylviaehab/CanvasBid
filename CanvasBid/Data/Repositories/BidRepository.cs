@@ -70,5 +70,7 @@ public class BidRepository : Repository<Bid>, IBidRepository
         }
 
         return newBidAmount >= highestBid + MINIMUM_BID_INCREMENT;
+        
+
     }
 }
