@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {}
+    "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {}
   },
   "projects": {
-    "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {
+    "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
+        "projectUniqueName": "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
         "projectName": "CanvasBid",
-        "projectPath": "e:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
+        "projectPath": "E:\\.net projects\\CanvasBid\\CanvasBid\\CanvasBid.csproj",
         "packagesPath": "C:\\Users\\dell\\.nuget\\packages\\",
-        "outputPath": "e:\\.net projects\\CanvasBid\\CanvasBid\\obj\\",
+        "outputPath": "E:\\.net projects\\CanvasBid\\CanvasBid\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dell\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -48,6 +48,14 @@
               "target": "Package",
               "version": "[12.0.1, )"
             },
+            "FluentValidation.DependencyInjectionExtensions": {
+              "target": "Package",
+              "version": "[12.1.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[10.0.7, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[10.0.4, )"
@@ -65,6 +73,14 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.1.7, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.18.0, )"
             }
           },
           "imports": [

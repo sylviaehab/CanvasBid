@@ -6,6 +6,7 @@ using CanvasBid.DTOS.UserDTOS;
 using CanvasBid.Models;
 using CanvasBid.Data.Repositories;
 using AutoMapper;
+using System.Security.Claims;
 namespace CanvasBid.Services;
 
 public class AuthService : IAuthServices
@@ -28,6 +29,7 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
 
         var claims = new[]
         {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new System.Security.Claims.Claim("sub", user.Id.ToString()),
             new System.Security.Claims.Claim("username", user.Username),
             new System.Security.Claims.Claim("email", user.Email),
@@ -45,61 +47,19 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private string HashPassword(string password)
-    {
-        using (var sha256 = SHA256.Create())
-        {
-            var salt = new byte[16];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
-            var hash = pbkdf2.GetBytes(20);
-
-            var hashWithSalt = new byte[36];
-            Array.Copy(salt, 0, hashWithSalt, 0, 16);
-            Array.Copy(hash, 0, hashWithSalt, 16, 20);
-
-            return Convert.ToBase64String(hashWithSalt);
-        }
-    }
-
-    private bool VerifyPassword(string password, string hash)
-    {
-        try
-        {
-            var hashBytes = Convert.FromBase64String(hash);
-            var salt = new byte[16];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
-
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256);
-            var hash2 = pbkdf2.GetBytes(20);
-
-            for (int i = 0; i < 20; i++)
-            {
-                if (hashBytes[i + 16] != hash2[i])
-                    return false;
-            }
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
+    
+    
     public async Task<(bool success, string Message, string? token, UserResponseDto user)> LoginAsync(LoginUserDto loginUserDto)
     {
         try
         {
-            if(string.IsNullOrEmpty(loginUserDto.Email)|| string.IsNullOrEmpty(loginUserDto.Password))
+            if (string.IsNullOrWhiteSpace(loginUserDto.Email) || string.IsNullOrWhiteSpace(loginUserDto.Password))
             {
                 return (false, "Email and password are required", null, null);
             }
-            var user=await _userRepository.GetByEmailAsync(loginUserDto.Email);
-            if(user==null || user.Password != loginUserDto.Password)
+            var email = loginUserDto.Email.Trim();
+            var user=await _userRepository.GetByEmailAsync(email);
+            if(user==null || (!VerifyPassword(loginUserDto.Password, user.Password)))
             {
                 return (false, "Invalid email or password", null, null);
             }
@@ -122,7 +82,7 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
     {
         try
         {
-            if(string.IsNullOrEmpty(registerUserDto.Username)||string.IsNullOrEmpty(registerUserDto.Email)|| string.IsNullOrEmpty(registerUserDto.Password))
+            if (string.IsNullOrWhiteSpace(registerUserDto.Username) || string.IsNullOrWhiteSpace(registerUserDto.Email) || string.IsNullOrWhiteSpace(registerUserDto.Password))
             {
                 return (false, "All fields are required", null);
             }
@@ -130,6 +90,7 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
             {
                 return (false, "Passwords do not match", null);
             }
+            registerUserDto.Email = registerUserDto.Email.Trim();
             if(await _userRepository.UsernameExistsAsync(registerUserDto.Username))
             {
                 return (false, "Username already exists", null);
@@ -151,7 +112,7 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
                     "Buyer"=>UserRole.Buyer,
                     _=>UserRole.Buyer
                 },
-                Password=registerUserDto.Password
+                Password=HashPassword(registerUserDto.Password)
             };
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
@@ -162,6 +123,38 @@ public AuthService(IUserRepository userRepository,IMapper mapper,IConfiguration 
         catch(Exception ex)
         {
             return (false, $"Registration failed: {ex.Message}", null);
+        }
+    }
+    private string HashPassword(string password)
+    {
+        var salt = RandomNumberGenerator.GetBytes(16);
+        var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, 10000, HashAlgorithmName.SHA256, 20);
+
+        var hashWithSalt = new byte[36];
+        Buffer.BlockCopy(salt, 0, hashWithSalt, 0, 16);
+        Buffer.BlockCopy(hash, 0, hashWithSalt, 16, 20);
+
+        return Convert.ToBase64String(hashWithSalt);
+    }
+
+    private bool VerifyPassword(string password, string hash)
+    {
+        try
+        {
+            var hashBytes = Convert.FromBase64String(hash);
+            var salt = new byte[16];
+            Array.Copy(hashBytes, 0, salt, 0, 16);
+
+            var hash2 = Rfc2898DeriveBytes.Pbkdf2(password, salt, 10000, HashAlgorithmName.SHA256, 20);
+
+            var storedHash = new byte[20];
+            Array.Copy(hashBytes, 16, storedHash, 0, 20);
+
+            return CryptographicOperations.FixedTimeEquals(storedHash, hash2);
+        }
+        catch
+        {
+            return false;
         }
     }
 }
